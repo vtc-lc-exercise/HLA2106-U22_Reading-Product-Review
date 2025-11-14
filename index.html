@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <title>HLA2106 Unit 22 – Reading Product Review</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 13s ease infinite;
+      min-height: 100vh;
+      padding: 24px;
+      margin: 0;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.97);
+      border-radius: 24px;
+      padding: 36px 28px 42px 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      animation: slideIn 0.6s ease-out;
+      backdrop-filter: blur(8px);
+    }
+    @keyframes slideIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .step { display: none; }
+    .step.active { display: block; animation: fadeIn 1s;}
+    @keyframes fadeIn {from{opacity:0}to{opacity:1}}
+    .title-page { text-align: center; padding: 64px 16px 52px 16px;}
+    .title-page h1 {
+      font-size: 2.3em; font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0, #764ba2 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 3px 18px #23a6d555; margin-bottom: 20px;}
+    .emoji-row { font-size: 2.5em; margin-bottom: 20px; animation: floatEmojis 1.6s infinite alternate;}
+    @keyframes floatEmojis {from{transform:translateY(0);}to{transform:translateY(-16px);}}
+    .nav-btn, .action-btn {
+      background: linear-gradient(90deg,#ff9a9e,#fad0c4);
+      border:none; border-radius:13px;
+      padding:0.7em 2em; color:#333; font-size: 1.08em; font-weight: 600; margin: 22px 8px 0;
+      box-shadow: 0 4px 16px #e4e4e4; cursor: pointer; transition: transform .18s, box-shadow .2s;
+      outline:none;
+    }
+    .nav-btn:hover, .action-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 20px #e4e4e4;
+      background: linear-gradient(90deg,#fbc2eb,#a6c1ee);
+    }
+    .section { margin-top: 54px; margin-bottom: 48px; }
+    .question {font-size:1.3em;color:#532c65;font-weight:600;margin-bottom:16px;}
+    .review-text {
+      background: #fff8f3;
+      border-radius: 13px;
+      padding: 26px 18px 22px 18px;
+      margin-bottom: 28px;
+      margin-top: 6px;
+      box-shadow: 0 2px 14px #e0bcd2;
+      font-size: 1.10em;
+    }
+    .adjective {
+      border-radius: 7px;
+      padding: 0 0;
+      margin: 0 1px;
+      transition: background .3s, color .3s;
+      cursor: pointer;
+      background: none;
+      font-weight: inherit;
+      color: inherit;
+      display: inline;
+    }
+    .adjective.selected {
+      background: #b3edc1;
+      font-weight: bold;
+      color: #116427;
+      padding: 2px 6px;
+      margin: 0 2px;
+      display: inline-block;
+    }
+    .adjective.incorrect {
+      background: #ffd6d6;
+      color: #B91F37 !important;
+    }
+    .feedback {font-weight:bold;color:#249f66;margin:19px 0;}
+    .category-flex { display: flex; gap: 2em; flex-wrap: wrap; align-items: flex-start;}
+    .drag-choices { min-width: 200px; }
+    .drag-category-grid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 1em;
+    }
+    .drag-category-grid > div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6em;
+    }
+    .drag-label{font-size:1em;font-weight:600;margin-bottom:8px;margin-top:8px;}
+    .drag-choices h4 {margin-top:0;margin-bottom:14px;font-size:1.08em;}
+    .drag-item {
+      background: #ffe4e1;
+      padding: 8px 15px;
+      border-radius: 6px;
+      margin-bottom:9px;
+      font-size:1em;
+      color:#444;
+      cursor: grab;
+      transition:.2s;
+      box-shadow:0 2px 8px #f7c6c7;
+      display:block;
+    }
+    .drop-zone {
+      min-height: 44px; padding: 11px; border: 2px dashed #76c9d2; border-radius: 9px; background: #f7fafc; margin-bottom:7px;transition:.2s;
+    }
+    .drop-zone.over {background:#e0ffe6;}
+    .match-section{
+      display:flex;gap:1.2em;flex-wrap:wrap;
+      margin-bottom:25px;margin-top:25px;
+    }
+    .match-pair{background:#f6f6ff;border-radius:13px;box-shadow:0 1px 8px #e4e4e4;padding:18px 18px 14px 18px;margin-bottom:6px;flex:1 1 320px;}
+    .match-label{font-weight:500;font-size:1.09em;margin-bottom:11px;}
+    .match-choices{margin:8px 0;}
+    .match-choice{
+      background:#ffe4e1;padding:7px 15px;border-radius:6px;margin-bottom:7px;
+      border:none;cursor:pointer;color:#444;font-size:1em;display:block;text-align:left;
+      transition:background .19s;
+    }
+    .match-choice.selected{background:#b3edc1;color:#108301;font-weight:600;}
+    .match-choice.incorrect{background:#ffe6e6;color:#be220b;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Landing Page -->
+  <div class="step active" id="step-0">
+    <div class="title-page">
+      <div class="emoji-row">🌟📝🍀</div>
+      <h1>HLA2106: Workplace Writing II</h1>
+      <h2 style="color:#764ba2;font-weight:600;">Unit 22: Reading Product Review</h2>
+      <p style="font-size:1.13em;">Welcome! Ready to start learning with fun activities? <span style="font-size:1.4em;">🤩</span></p>
+      <button class="nav-btn" onclick="gotoStep(1)">Start &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Question 1 -->
+  <div class="step" id="step-1">
+    <div class="section">
+      <div class="question">Question 1</div>
+      <div style="font-size:1.14em;color:#554;margin-bottom:10px;">
+        Read the review and <b>find the adjectives</b> by clicking any word!
+      </div>
+      <div class="review-text" id="reviewText"></div>
+      <div class="feedback" id="adjectiveResult"></div>
+      <div style="margin-top: 12px;">
+        <button class="action-btn" onclick="submitQ1()">Check Answers</button>
+      </div>
+      <div style="text-align:right;">
+        <button class="action-btn" onclick="gotoStep(2)">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 2: Compact Grid -->
+  <div class="step" id="step-2">
+    <div class="section">
+      <div class="question">Question 2</div>
+      <div class="review-text">
+        This top-quality air purifier is perfect for spacious areas because its motor is powerful. It can purify rooms up to 50m² in just 10 minutes, providing you with fresh air in no time. Also, our air purifier is completely safe, as it never uses UV-C light. And with its user-friendly design, you can easily set a timer for 2, 4, or 8 hours. What's more, our air purifier is affordable. It's cheaper than many other options on the market, making it a perfect choice for everyone.
+      </div>
+      <div style="font-size:1.12em;color:#554;margin-bottom:10px;">
+        <b>Drag each adjective to the meaning that matches its use below:</b>
+      </div>
+      <div class="category-flex">
+        <div class="drag-choices">
+          <h4>Adjectives</h4>
+          <div class="drag-item" draggable="true" id="top-quality">top-quality</div>
+          <div class="drag-item" draggable="true" id="affordable">affordable</div>
+          <div class="drag-item" draggable="true" id="spacious">spacious</div>
+          <div class="drag-item" draggable="true" id="fresh">fresh</div>
+          <div class="drag-item" draggable="true" id="user-friendly">user-friendly</div>
+          <div class="drag-item" draggable="true" id="safe">safe</div>
+          <div class="drag-item" draggable="true" id="powerful">powerful</div>
+          <div class="drag-item" draggable="true" id="cheaper">cheaper</div>
+          <div class="drag-item" draggable="true" id="perfect">perfect</div>
+        </div>
+        <div class="drag-category-grid">
+          <div>
+            <div class="drag-label">very good</div>
+            <div id="drop-verygood" class="drop-zone"></div>
+            <div class="drag-label">large and with a lot of space</div>
+            <div id="drop-large" class="drop-zone"></div>
+            <div class="drag-label">not risky</div>
+            <div id="drop-safe" class="drop-zone"></div>
+          </div>
+          <div>
+            <div class="drag-label">not expensive</div>
+            <div id="drop-inexpensive" class="drop-zone"></div>
+            <div class="drag-label">new</div>
+            <div id="drop-new" class="drop-zone"></div>
+            <div class="drag-label">easy to use</div>
+            <div id="drop-easy" class="drop-zone"></div>
+            <div class="drag-label">strong</div>
+            <div id="drop-powerful" class="drop-zone"></div>
+          </div>
+        </div>
+      </div>
+      <div class="feedback" id="dragDropResult"></div>
+      <div style="text-align:right;">
+        <button class="action-btn" onclick="gotoStep(3)">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 3: Match comment with reason -->
+  <div class="step" id="step-3">
+    <div class="section">
+      <div class="question">Question 3</div>
+      <div class="review-text">
+        This top-quality air purifier is perfect for spacious areas because its motor is powerful. It can purify rooms up to 50m² in just 10 minutes, providing you with fresh air in no time. Also, our air purifier is completely safe, as it never uses UV-C light. And with its user-friendly design, you can easily set a timer for 2, 4, or 8 hours. What's more, our air purifier is affordable. It's cheaper than many other options on the market, making it a perfect choice for everyone.
+      </div>
+      <div class="match-section">
+        <div class="match-pair">
+          <div class="match-label">The purifier is perfect for spacious areas because ...</div>
+          <div class="match-choices">
+            <button class="match-choice" onclick="matchingQ3(this,3)">it is affordable.</button>
+            <button class="match-choice" onclick="matchingQ3(this,2)">it never uses UV-C light.</button>
+            <button class="match-choice" onclick="matchingQ3(this,1)">its motor is powerful.</button>
+          </div>
+        </div>
+        <div class="match-pair">
+          <div class="match-label">The purifier is completely safe because ...</div>
+          <div class="match-choices">
+            <button class="match-choice" onclick="matchingQ3(this,4)">it never uses UV-C light.</button>
+            <button class="match-choice" onclick="matchingQ3(this,6)">it is affordable.</button>
+            <button class="match-choice" onclick="matchingQ3(this,5)">it is new.</button>
+          </div>
+        </div>
+      </div>
+      <div class="feedback" id="matchResult"></div>
+      <div style="text-align:right;">
+        <button class="action-btn" onclick="gotoStep(4)">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Question 4: Drag reason word (with specific feedback) -->
+  <div class="step" id="step-4">
+    <div class="section">
+      <div class="question">Question 4</div>
+      <div class="review-text">
+        This top-quality air purifier is perfect for spacious areas because its motor is powerful. It can purify rooms up to 50m² in just 10 minutes, providing you with fresh air in no time. Also, our air purifier is completely safe, as it never uses UV-C light. And with its user-friendly design, you can easily set a timer for 2, 4, or 8 hours. What's more, our air purifier is affordable. It's cheaper than many other options on the market, making it a perfect choice for everyone.
+      </div>
+      <div style="font-size:1.08em;font-weight:500;margin-bottom:7px;">
+        Which words introduce the reasons above? Drag and drop the correct words below:<br>
+        <span style="font-size:0.95em; color:#765;">Tip: Click a word in 'Drop here' to remove it!</span>
+      </div>
+      <div style="display:flex;gap:1em;flex-wrap:wrap;margin-top:12px;">
+        <div>
+          <div style="margin-bottom:7px;font-weight:500;">Choices:</div>
+          <div class="drag-choices" id="reasonChoices">
+            <div class="drag-item" draggable="true" id="because2">because</div>
+            <div class="drag-item" draggable="true" id="as2">as</div>
+            <div class="drag-item" draggable="true" id="never2">never</div>
+            <div class="drag-item" draggable="true" id="with2">with</div>
+          </div>
+        </div>
+        <div>
+          <div style="margin-bottom:8px;font-weight:500;">Drop here:</div>
+          <div id="dropReason" class="drop-zone" style="width:200px;min-height:40px;"></div>
+        </div>
+      </div>
+      <div style="margin-top: 12px;">
+        <button class="action-btn" onclick="submitQ4()">Submit Answers</button>
+      </div>
+      <div class="feedback" id="dragReasonResult"></div>
+      <div style="text-align:right;">
+        <button class="action-btn" onclick="gotoStep(0)">🏠 Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function gotoStep(idx){
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active',i===idx));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Q1: Every word is clickable
+const reviewTextVisible = `This top-quality air purifier is perfect for spacious areas because its motor is powerful. It can purify rooms up to 50m² in just 10 minutes, providing you with fresh air in no time. Also, our air purifier is completely safe, as it never uses UV-C light. And with its user-friendly design, you can easily set a timer for 2, 4, or 8 hours. What's more, our air purifier is affordable. It's cheaper than many other options on the market, making it a perfect choice for everyone.`;
+const adjectiveList = ["top-quality","perfect","spacious","powerful","fresh","safe","user-friendly","affordable","cheaper"];
+let q1Choices = {};
+
+function makeReviewFullyInteractive() {
+  const words = reviewTextVisible.split(/(\s+|[,.!?;—–''])/g).filter(w=>w!==undefined);
+  let html = '';
+  words.forEach((word,idx) => {
+    if(/\s+/.test(word)) {
+      html += word;
+    } else if(word) {
+      html += `<span class="adjective" data-word="${word}" data-idx="${idx}">${word}</span>`;
+    }
+  });
+  document.getElementById('reviewText').innerHTML = html;
+  document.querySelectorAll('.adjective').forEach(el=>{
+    el.onclick=()=>{
+      let word = el.getAttribute('data-word');
+      el.classList.toggle(adjectiveList.includes(word) ? 'selected' : 'incorrect');
+      if(adjectiveList.includes(word)){
+        q1Choices[word] = el.classList.contains('selected');
+      } else {
+        setTimeout(()=>el.classList.remove('incorrect'),600);
+      }
+      updateAdjectiveResult();
+    };
+  });
+}
+function updateAdjectiveResult(){
+  let found = Object.values(q1Choices).filter(Boolean).length;
+  document.getElementById('adjectiveResult').innerHTML =
+    found ? `Adjectives selected: ${found}` : "";
+}
+function submitQ1() {
+  let correct = 0;
+  let wrong = 0;
+  adjectiveList.forEach(adj=>{
+    if(q1Choices[adj]) correct++;
+  });
+  let selectedWords = Object.keys(q1Choices).filter(k=>q1Choices[k]);
+  wrong = selectedWords.filter(w=>!adjectiveList.includes(w)).length;
+  if(correct === adjectiveList.length && wrong === 0){
+    document.getElementById('adjectiveResult').innerHTML = "🌟 All correct! Well done!";
+  } else {
+    document.getElementById('adjectiveResult').innerHTML = "Try again! Check for missed or extra words.";
+  }
+}
+makeReviewFullyInteractive();
+
+// Q2: Drag-and-Drop ONLY adjectives to correct paraphrases
+let dragItem = null;
+document.querySelectorAll('.drag-item').forEach(el => {
+  el.addEventListener('dragstart', e => { dragItem=el; });
+});
+const dragAnswers = {
+  "drop-verygood": ["top-quality","perfect"],
+  "drop-inexpensive": ["affordable","cheaper"],
+  "drop-large": ["spacious"],
+  "drop-new": ["fresh"],
+  "drop-easy": ["user-friendly"],
+  "drop-safe": ["safe"],
+  "drop-powerful": ["powerful"]
+};
+["drop-verygood","drop-inexpensive","drop-large","drop-new","drop-easy","drop-safe","drop-powerful"].forEach(zone=>{
+  document.getElementById(zone).addEventListener('dragover',e=>e.preventDefault());
+  document.getElementById(zone).addEventListener('drop',function(e){
+    if(dragItem && dragAnswers[zone].includes(dragItem.id)){
+      this.appendChild(dragItem);
+      dragItem=null;
+      checkQ2();
+    }
+  });
+});
+function checkQ2(){
+  let correct = 0;
+  let total = 0;
+  for(const [zone,ids] of Object.entries(dragAnswers)){
+    Array.from(document.getElementById(zone).children).forEach(child=>{
+      if(ids.includes(child.id)) correct++;
+      total++;
+    });
+  }
+  if(total===9 && correct===9){
+    document.getElementById('dragDropResult').innerHTML = "🌟 All correct! Well done!";
+  } else {
+    document.getElementById('dragDropResult').innerHTML = "Keep going! 🧐";
+  }
+}
+
+// Q3: Matching Questions
+let matchProgress = {};
+function matchingQ3(btn, id){
+  let parent = btn.parentNode.parentNode;
+  let choices = parent.querySelectorAll(".match-choice");
+  Array.from(choices).forEach(b=>b.classList.remove('selected','incorrect'));
+  if(id===1 || id===4){
+    btn.classList.add('selected');
+    if(id===1) matchProgress.q3a = true;
+    if(id===4) matchProgress.q3b = true;
+  } else{
+    btn.classList.add('incorrect');
+    if(id!==1) matchProgress.q3a = false;
+    if(id!==4) matchProgress.q3b = false;
+  }
+  showQ3Feedback();
+}
+function showQ3Feedback(){
+  if(matchProgress.q3a && matchProgress.q3b){
+    document.getElementById('matchResult').innerHTML = "✅ Correct! Both reasons matched!";
+  } else if(matchProgress.q3a || matchProgress.q3b){
+    document.getElementById('matchResult').innerHTML = "One answer is correct, try the other!";
+  } else {
+    document.getElementById('matchResult').innerHTML = "";
+  }
+}
+
+// Q4 with specific feedback for wrong words
+let reasonDrag = null;
+["because2","as2","never2","with2"].forEach(id=>{
+  let el = document.getElementById(id);
+  if(el) el.addEventListener('dragstart',e=>{reasonDrag=e.target;});
+});
+document.getElementById('dropReason').addEventListener('dragover',e=>e.preventDefault());
+document.getElementById('dropReason').addEventListener('drop',function(e){
+  if(reasonDrag){
+    this.appendChild(reasonDrag);
+  }
+});
+document.getElementById('dropReason').addEventListener('click', function(e){
+  if (e.target.classList.contains('drag-item')) {
+    document.getElementById('reasonChoices').appendChild(e.target);
+  }
+});
+function submitQ4() {
+  let chosen = Array.from(document.getElementById('dropReason').children)
+                .map(x=>x.textContent.trim());
+  const correctSet = new Set(['because','as']);
+  const chosenSet = new Set(chosen);
+  
+  // Check for specific incorrect words
+  if(chosenSet.has('never')){
+    document.getElementById('dragReasonResult').innerHTML = "'Never' is an adverb and does NOT introduce a reason. Try again!";
+    return;
+  }
+  if(chosenSet.has('with')){
+    document.getElementById('dragReasonResult').innerHTML = "'With' is a preposition and does NOT introduce a reason. Try again!";
+    return;
+  }
+  
+  // Check if correct
+  if (
+    chosen.length === correctSet.size &&
+    [...correctSet].every(word => chosenSet.has(word)) &&
+    [...chosenSet].every(word => correctSet.has(word))
+  ) {
+    document.getElementById('dragReasonResult').innerHTML = "🌟 All correct! Well done!";
+  } else {
+    document.getElementById('dragReasonResult').innerHTML = "Try again! You need to place BOTH correct words (because and as) only.";
+  }
+}
+</script>
+</body>
+</html>
